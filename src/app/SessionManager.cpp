@@ -88,6 +88,19 @@ int SessionManager::onlineCount() const
     return count;
 }
 
+int SessionManager::sendTo(const QVector<SessionId>& ids,
+                           const QByteArray& payload,
+                           const QByteArray& suffix)
+{
+    int delivered = 0;
+    for (SessionId id : ids) {
+        Session* session = this->session(id);
+        if (session && session->isOnline() && session->send(payload, suffix))
+            ++delivered;
+    }
+    return delivered;
+}
+
 int SessionManager::broadcast(const QByteArray& payload, const QByteArray& suffix)
 {
     int delivered = 0;

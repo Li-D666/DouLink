@@ -3,7 +3,11 @@
 #include "core/ByteCodec.h"
 #include "core/Types.h"
 
+#include <QAbstractItemModel>
+#include <QEvent>
 #include <QFontMetrics>
+#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QStyle>
 #include <QStyleOptionViewItem>
@@ -11,6 +15,11 @@
 namespace doulink {
 namespace ui {
 namespace {
+
+QRectF checkboxRect(const QRect& card)
+{
+    return QRectF(card.left() + 12, card.top() + 10, 16, 16);
+}
 
 QColor stateColor(SessionState state)
 {
@@ -72,17 +81,36 @@ void SessionListDelegate::paint(QPainter* painter,
             QRectF(card.left() + 1, card.top() + 11, 3, card.height() - 22), 1.5, 1.5);
     }
 
+    const bool checked = index.data(Qt::CheckStateRole).toInt() == Qt::Checked;
+    const QRectF checkBox = checkboxRect(card);
+    painter->setPen(QPen(checked ? QColor(QStringLiteral("#22d3ee"))
+                                 : QColor(QStringLiteral("#3b5570")),
+                         1.2));
+    painter->setBrush(checked ? QColor(QStringLiteral("#123243"))
+                              : QColor(QStringLiteral("#0b131c")));
+    painter->drawRoundedRect(checkBox, 4, 4);
+    if (checked) {
+        QPen checkPen(QColor(QStringLiteral("#67e8f9")), 2.0);
+        checkPen.setCapStyle(Qt::RoundCap);
+        checkPen.setJoinStyle(Qt::RoundJoin);
+        painter->setPen(checkPen);
+        painter->drawLine(QPointF(checkBox.left() + 4, checkBox.center().y()),
+                          QPointF(checkBox.center().x() - 1, checkBox.bottom() - 4));
+        painter->drawLine(QPointF(checkBox.center().x() - 1, checkBox.bottom() - 4),
+                          QPointF(checkBox.right() - 4, checkBox.top() + 4));
+    }
+
     const auto state = static_cast<SessionState>(index.data(StateRole).toInt());
     const QColor dotColor = stateColor(state);
-    const QPointF dotCenter(card.left() + 18, card.top() + 18);
+    const QPointF dotCenter(card.left() + 38, card.top() + 18);
 
     QColor glow = dotColor;
     glow.setAlpha(45);
     painter->setPen(Qt::NoPen);
     painter->setBrush(glow);
-    painter->drawEllipse(dotCenter, 6.5, 6.5);
+    painter->drawEllipse(dotCenter, 5.5, 5.5);
     painter->setBrush(dotColor);
-    painter->drawEllipse(dotCenter, 3.5, 3.5);
+    painter->drawEllipse(dotCenter, 3.2, 3.2);
 
     QFont nameFont = option.font;
     nameFont.setPointSizeF(10.0);
@@ -92,7 +120,7 @@ void SessionListDelegate::paint(QPainter* painter,
 
     const QString name = index.data(NameRole).toString();
     const QFontMetrics nameMetrics(nameFont);
-    const QRect nameRect(card.left() + 30, card.top() + 6, card.width() - 30 - 78, 23);
+    const QRect nameRect(card.left() + 50, card.top() + 6, card.width() - 50 - 68, 23);
     painter->drawText(nameRect,
                       Qt::AlignLeft | Qt::AlignVCenter,
                       nameMetrics.elidedText(name, Qt::ElideRight, nameRect.width()));
@@ -102,20 +130,20 @@ void SessionListDelegate::paint(QPainter* painter,
     painter->setFont(smallFont);
     painter->setPen(dotColor);
     const QString stateText = index.data(StateTextRole).toString();
-    const QRect stateRect(card.right() - 74, card.top() + 7, 64, 20);
+    const QRect stateRect(card.right() - 66, card.top() + 7, 58, 20);
     painter->drawText(stateRect, Qt::AlignRight | Qt::AlignVCenter, stateText);
 
     const QFontMetrics smallMetrics(smallFont);
     painter->setPen(QColor(QStringLiteral("#7c93a7")));
     const QString endpoint = index.data(EndpointRole).toString();
-    const QRect endpointRect(card.left() + 30, card.top() + 28, card.width() - 42, 18);
+    const QRect endpointRect(card.left() + 50, card.top() + 28, card.width() - 62, 18);
     painter->drawText(endpointRect,
                       Qt::AlignLeft | Qt::AlignVCenter,
                       smallMetrics.elidedText(endpoint, Qt::ElideRight, endpointRect.width()));
 
     const quint64 rxBytes = index.data(RxBytesRole).toULongLong();
     const quint64 txBytes = index.data(TxBytesRole).toULongLong();
-    const QRect metricRect(card.left() + 30, card.top() + 49, card.width() - 42, 17);
+    const QRect metricRect(card.left() + 50, card.top() + 49, card.width() - 62, 17);
 
     const QString rxText = QStringLiteral("RX  %1").arg(Bytes::formatSize(rxBytes));
     const QString txText = QStringLiteral("TX  %1").arg(Bytes::formatSize(txBytes));
@@ -130,6 +158,36 @@ void SessionListDelegate::paint(QPainter* painter,
                       txText);
 
     painter->restore();
+}
+
+bool SessionListDelegate::editorEvent(QEvent* event,
+                                      QAbstractItemModel* model,
+                                      const QStyleOptionViewItem& option,
+                                      const QModelIndex& index)
+{
+    if (!(index.flags() & Qt::ItemIsUserCheckable))
+        return false;
+
+    const auto toggle = [&]() -> bool {
+        const auto state = static_cast<Qt::CheckState>(index.data(Qt::CheckStateRole).toInt());
+        const Qt::CheckState next = state == Qt::Checked ? Qt::Unchecked : Qt::Checked;
+        return model->setData(index, next, Qt::CheckStateRole);
+    };
+
+    if (event->type() == QEvent::MouseButtonRelease) {
+        auto* mouse = static_cast<QMouseEvent*>(event);
+        if (mouse->button() == Qt::LeftButton) {
+            const QRect card = option.rect.adjusted(3, 2, -3, -2);
+            if (checkboxRect(card).contains(mouse->pos()))
+                return toggle();
+        }
+    } else if (event->type() == QEvent::KeyPress) {
+        auto* key = static_cast<QKeyEvent*>(event);
+        if (key->key() == Qt::Key_Space || key->key() == Qt::Key_Select)
+            return toggle();
+    }
+
+    return false;
 }
 
 } // namespace ui

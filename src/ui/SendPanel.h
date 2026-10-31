@@ -12,8 +12,8 @@ class SendPanel;
 namespace doulink {
 namespace ui {
 
-// Send composer: text / hex input, line ending suffix, optional periodic send
-// and a broadcast action that MainWindow routes to all online sessions.
+// Send composer: text / hex input, line ending suffix and optional periodic
+// send. MainWindow routes the payload to all checked sessions.
 // Layout lives in sendpanel.ui; this class only owns behavior.
 class SendPanel : public QFrame
 {
@@ -23,13 +23,12 @@ public:
     explicit SendPanel(QWidget* parent = nullptr);
     ~SendPanel() override;
 
-    void setSessionAvailability(bool currentOnline, bool anyOnline);
+    void setCanSend(int onlineTargetCount);
     bool isAutoSendActive() const;
     void stopAutoSend();
 
 signals:
     void sendRequested(const QByteArray& payload, const QByteArray& suffix);
-    void broadcastRequested(const QByteArray& payload, const QByteArray& suffix);
 
 private slots:
     void updateMeta();
@@ -37,7 +36,6 @@ private slots:
     void onSuffixChanged(int index);
     void onAutoSendToggled(bool enabled);
     void doSend();
-    void doBroadcast();
 
 private:
     bool buildPayload(QByteArray* payload,
@@ -48,8 +46,7 @@ private:
 
     ::Ui::SendPanel* ui = nullptr;
     QTimer* m_timer = nullptr;
-    bool m_online = false;
-    bool m_anyOnline = false;
+    int m_targetCount = 0;
 };
 
 } // namespace ui

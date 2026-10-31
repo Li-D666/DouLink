@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QMainWindow>
 #include <QPoint>
+#include <QVector>
 
 class QTimer;
 class QListWidgetItem;
@@ -36,17 +37,17 @@ private slots:
     void onSessionStatsChanged(doulink::Session* session);
     void onSessionNameChanged(doulink::Session* session);
     void onHistoryCleared(doulink::Session* session);
+    void onTypeFilterChanged();
+    void onSessionItemChanged(QListWidgetItem* item);
 
     void onToggleSession();
     void onOpenAll();
     void onCloseAll();
     void onSendRequested(const QByteArray& payload, const QByteArray& suffix);
-    void onBroadcastRequested(const QByteArray& payload, const QByteArray& suffix);
 
     void onClearLog();
     void onSaveLog();
     void onLogFilterChanged();
-    void onPauseToggled(bool paused);
     void onHexToggled(bool checked);
     void onTimestampToggled(bool checked);
 
@@ -61,6 +62,10 @@ private:
     void addSessionToUi(doulink::Session* session);
     void connectSessionSignals(doulink::Session* session);
     void refreshSessionItem(doulink::Session* session);
+    void applySessionFilter();
+    void selectFirstVisibleSession();
+    QVector<doulink::SessionId> checkedSessionIds() const;
+    int checkedOnlineCount() const;
 
     doulink::Session* currentSession() const;
     void selectSession(doulink::SessionId id);

@@ -51,9 +51,6 @@ SendPanel::SendPanel(QWidget* parent)
     connect(ui->sendButton, &QPushButton::clicked, this, [this]() {
         doSend();
     });
-    connect(ui->broadcastButton, &QPushButton::clicked, this, [this]() {
-        doBroadcast();
-    });
 
     auto* sendShortcut = new QShortcut(QKeySequence(QStringLiteral("Ctrl+Return")), this);
     sendShortcut->setContext(Qt::WidgetWithChildrenShortcut);
@@ -71,12 +68,11 @@ SendPanel::~SendPanel()
     delete ui;
 }
 
-void SendPanel::setSessionAvailability(bool currentOnline, bool anyOnline)
+void SendPanel::setCanSend(int onlineTargetCount)
 {
-    m_online = currentOnline;
-    m_anyOnline = anyOnline;
+    m_targetCount = qMax(0, onlineTargetCount);
 
-    if (!currentOnline && ui->autoCheck->isChecked())
+    if (m_targetCount == 0 && ui->autoCheck->isChecked())
         ui->autoCheck->setChecked(false);
 
     updateMeta();
@@ -127,7 +123,7 @@ void SendPanel::onAutoSendToggled(bool enabled)
     QByteArray suffix;
     QString error;
     bool empty = false;
-    if (!m_online || !buildPayload(&payload, &suffix, &error, &empty) || empty) {
+    if (m_targetCount == 0 || !buildPayload(&payload, &suffix, &error, &empty) || empty) {
         ui->autoCheck->setChecked(false);
         return;
     }
@@ -138,7 +134,7 @@ void SendPanel::onAutoSendToggled(bool enabled)
 
 void SendPanel::doSend()
 {
-    if (!m_online) {
+    if (m_targetCount == 0) {
         updateMeta();
         return;
     }
@@ -159,21 +155,9 @@ void SendPanel::doSend()
     emit sendRequested(payload, suffix);
 }
 
-void SendPanel::doBroadcast()
-{
-    QByteArray payload;
-    QByteArray suffix;
-    QString error;
-    bool empty = false;
-    if (!m_anyOnline || !buildPayload(&payload, &suffix, &error, &empty) || empty)
-        return;
-
-    emit broadcastRequested(payload, suffix);
-}
-
 void SendPanel::fireTimer()
 {
-    if (!m_online) {
+    if (m_targetCount == 0) {
         ui->autoCheck->setChecked(false);
         return;
     }
@@ -203,17 +187,21 @@ void SendPanel::updateMeta()
         ui->meta->setStyleSheet(QStringLiteral("color: #f87171;"));
         ui->meta->setText(error);
         ui->sendButton->setEnabled(false);
-        ui->broadcastButton->setEnabled(false);
         if (ui->autoCheck->isChecked())
             ui->autoCheck->setChecked(false);
         return;
     }
 
     if (empty) {
+        QString text = QStringLiteral("等待输入…");
+        if (m_targetCount > 0)
+            text += QStringLiteral(" · 目标 %1 个在线设备").arg(m_targetCount);
+        else
+            text += QStringLiteral(" · 没有可发送的在线设备");
+
         ui->meta->setStyleSheet(QString());
-        ui->meta->setText(QStringLiteral("等待输入…"));
+        ui->meta->setText(text);
         ui->sendButton->setEnabled(false);
-        ui->broadcastButton->setEnabled(false);
         if (ui->autoCheck->isChecked())
             ui->autoCheck->setChecked(false);
         return;
@@ -226,14 +214,15 @@ void SendPanel::updateMeta()
                                                        : QStringLiteral("文本"));
     if (m_timer->isActive())
         text += QStringLiteral(" · 每 %1 ms 自动发送").arg(ui->intervalSpin->value());
-    if (!m_online)
-        text += QStringLiteral(" · 当前会话未连接");
+    if (m_targetCount <= 0)
+        text += QStringLiteral(" · 没有可发送的在线设备");
+    else
+        text += QStringLiteral(" · 目标 %1 个在线设备").arg(m_targetCount);
 
     ui->meta->setStyleSheet(QString());
     ui->meta->setText(text);
 
-    ui->sendButton->setEnabled(m_online);
-    ui->broadcastButton->setEnabled(m_anyOnline);
+    ui->sendButton->setEnabled(m_targetCount > 0);
 }
 
 bool SendPanel::buildPayload(QByteArray* payload,

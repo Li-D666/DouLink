@@ -2,6 +2,9 @@
 
 #include <QStyledItemDelegate>
 
+class QAbstractItemModel;
+class QEvent;
+
 namespace doulink {
 namespace ui {
 
@@ -13,7 +16,8 @@ enum SessionItemRole {
     StateRole,
     StateTextRole,
     RxBytesRole,
-    TxBytesRole
+    TxBytesRole,
+    KindRole
 };
 
 class SessionListDelegate : public QStyledItemDelegate
@@ -25,6 +29,10 @@ public:
                const QStyleOptionViewItem& option,
                const QModelIndex& index) const override;
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+    bool editorEvent(QEvent* event,
+                     QAbstractItemModel* model,
+                     const QStyleOptionViewItem& option,
+                     const QModelIndex& index) override;
 };
 
 } // namespace ui

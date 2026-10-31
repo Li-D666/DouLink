@@ -26,7 +26,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QShortcut>
-#include <QSignalBlocker>
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QStyle>
@@ -38,6 +37,7 @@
 using doulink::ui::EndpointRole;
 using doulink::ui::NameRole;
 using doulink::ui::RxBytesRole;
+using doulink::ui::KindRole;
 using doulink::ui::SessionIdRole;
 using doulink::ui::StateRole;
 using doulink::ui::StateTextRole;
@@ -68,10 +68,8 @@ MainWindow::MainWindow(doulink::SessionManager* manager, QWidget* parent)
     connect(ui->closeAllButton, &QPushButton::clicked, this, &MainWindow::onCloseAll);
     connect(ui->aboutButton, &QPushButton::clicked, this, &MainWindow::onAbout);
     connect(ui->toggleButton, &QPushButton::clicked, this, &MainWindow::onToggleSession);
-    connect(ui->duplicateButton, &QPushButton::clicked, this, &MainWindow::onDuplicateSession);
     connect(ui->clearButton, &QPushButton::clicked, this, &MainWindow::onClearLog);
     connect(ui->saveButton, &QPushButton::clicked, this, &MainWindow::onSaveLog);
-    connect(ui->pauseButton, &QPushButton::toggled, this, &MainWindow::onPauseToggled);
     connect(ui->hexToggle, &QCheckBox::toggled, this, &MainWindow::onHexToggled);
     connect(ui->timeToggle, &QCheckBox::toggled, this, &MainWindow::onTimestampToggled);
     connect(ui->searchEdit, &QLineEdit::textChanged, this, &MainWindow::onLogFilterChanged);
@@ -88,6 +86,14 @@ MainWindow::MainWindow(doulink::SessionManager* manager, QWidget* parent)
             &QListWidget::customContextMenuRequested,
             this,
             &MainWindow::onListContextMenu);
+    connect(ui->typeFilterCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            [this](int) { onTypeFilterChanged(); });
+    connect(ui->sessionList,
+            &QListWidget::itemChanged,
+            this,
+            &MainWindow::onSessionItemChanged);
 
     connect(ui->logView,
             &doulink::ui::LogView::countChanged,
@@ -95,16 +101,12 @@ MainWindow::MainWindow(doulink::SessionManager* manager, QWidget* parent)
             [this](int visible, int total) {
                 ui->logMeta->setText(visible == total
                                          ? QStringLiteral("%1 条").arg(total)
-                                         : QStringLiteral("%1 / %2 条").arg(visible).arg(total));
+                                         : QStringLiteral("显示 %1 / 共 %2 条").arg(visible).arg(total));
             });
     connect(ui->sendPanel,
             &doulink::ui::SendPanel::sendRequested,
             this,
             &MainWindow::onSendRequested);
-    connect(ui->sendPanel,
-            &doulink::ui::SendPanel::broadcastRequested,
-            this,
-            &MainWindow::onBroadcastRequested);
 
     connect(ui->serialCard, &QPushButton::clicked, this, [this]() {
         openDialog(doulink::TransportKind::Serial);
@@ -136,10 +138,15 @@ MainWindow::MainWindow(doulink::SessionManager* manager, QWidget* parent)
 
         refreshCounters();
 
-        if (!sessions.isEmpty())
-            selectSession(sessions.first()->id());
-        else
+        refreshSendAvailability();
+
+        if (!sessions.isEmpty()) {
+            selectFirstVisibleSession();
+            if (m_currentId == 0)
+                showEmptyState();
+        } else {
             showEmptyState();
+        }
     } else {
         showEmptyState();
     }
@@ -185,7 +192,8 @@ void MainWindow::addSessionToUi(doulink::Session* session)
         return;
 
     auto* item = new QListWidgetItem;
-    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+    item->setCheckState(Qt::Unchecked);
     item->setSizeHint(QSize(0, 78));
     item->setText(session->name());
     item->setData(SessionIdRole, QVariant::fromValue<qulonglong>(session->id()));
@@ -194,9 +202,11 @@ void MainWindow::addSessionToUi(doulink::Session* session)
     ui->sessionList->addItem(item);
     connectSessionSignals(session);
     refreshSessionItem(session);
+    applySessionFilter();
+    refreshSendAvailability();
 
     if (m_currentId == 0)
-        selectSession(session->id());
+        selectFirstVisibleSession();
 }
 
 void MainWindow::connectSessionSignals(doulink::Session* session)
@@ -226,7 +236,72 @@ void MainWindow::refreshSessionItem(doulink::Session* session)
     item->setData(StateTextRole, session->stateText());
     item->setData(RxBytesRole, QVariant::fromValue<qulonglong>(stats.rxBytes));
     item->setData(TxBytesRole, QVariant::fromValue<qulonglong>(stats.txBytes));
+    item->setData(KindRole, static_cast<int>(session->config().kind));
     ui->sessionList->viewport()->update();
+}
+
+void MainWindow::applySessionFilter()
+{
+    const int filter = ui->typeFilterCombo->currentIndex();
+
+    for (auto it = m_items.constBegin(); it != m_items.constEnd(); ++it) {
+        QListWidgetItem* item = it.value();
+        const int kind = item->data(KindRole).toInt();
+        bool visible = filter == 0;
+        if (filter == 1) {
+            visible = kind == static_cast<int>(doulink::TransportKind::Serial);
+        } else if (filter == 2) {
+            visible = kind == static_cast<int>(doulink::TransportKind::TcpClient)
+                || kind == static_cast<int>(doulink::TransportKind::TcpServer);
+        } else if (filter == 3) {
+            visible = kind == static_cast<int>(doulink::TransportKind::Udp);
+        }
+        item->setHidden(!visible);
+    }
+
+    QListWidgetItem* current = ui->sessionList->currentItem();
+    if (current && current->isHidden())
+        selectFirstVisibleSession();
+}
+
+void MainWindow::selectFirstVisibleSession()
+{
+    for (int i = 0; i < ui->sessionList->count(); ++i) {
+        QListWidgetItem* item = ui->sessionList->item(i);
+        if (!item || item->isHidden())
+            continue;
+        const auto id = static_cast<doulink::SessionId>(item->data(SessionIdRole).toULongLong());
+        selectSession(id);
+        return;
+    }
+}
+
+QVector<doulink::SessionId> MainWindow::checkedSessionIds() const
+{
+    QVector<doulink::SessionId> ids;
+    for (int i = 0; i < ui->sessionList->count(); ++i) {
+        QListWidgetItem* item = ui->sessionList->item(i);
+        if (item && item->checkState() == Qt::Checked) {
+            ids.append(
+                static_cast<doulink::SessionId>(item->data(SessionIdRole).toULongLong()));
+        }
+    }
+    return ids;
+}
+
+int MainWindow::checkedOnlineCount() const
+{
+    if (!m_manager)
+        return 0;
+
+    int count = 0;
+    for (doulink::SessionId id : checkedSessionIds()) {
+        if (doulink::Session* session = m_manager->session(id)) {
+            if (session->isOnline())
+                ++count;
+        }
+    }
+    return count;
 }
 
 doulink::Session* MainWindow::currentSession() const
@@ -262,15 +337,6 @@ void MainWindow::syncCurrentSession()
     }
 
     ui->stack->setCurrentIndex(1);
-
-    ui->sendPanel->stopAutoSend();
-
-    {
-        QSignalBlocker blocker(ui->pauseButton);
-        ui->pauseButton->setChecked(false);
-    }
-    ui->pauseButton->setText(QStringLiteral("暂停"));
-    ui->logView->setPaused(false);
     ui->logView->setEntries(session->history());
 
     refreshHeader();
@@ -283,7 +349,7 @@ void MainWindow::showEmptyState()
     if (ui->stack)
         ui->stack->setCurrentIndex(0);
     if (ui->sendPanel)
-        ui->sendPanel->setSessionAvailability(false, m_manager && m_manager->onlineCount() > 0);
+        ui->sendPanel->setCanSend(0);
     setWindowTitle(QStringLiteral("DouLink · 串口 / 网络调试助手"));
 }
 
@@ -371,9 +437,7 @@ void MainWindow::refreshSendAvailability()
 {
     if (!ui->sendPanel)
         return;
-    doulink::Session* session = currentSession();
-    ui->sendPanel->setSessionAvailability(session && session->isOnline(),
-                                          m_manager && m_manager->onlineCount() > 0);
+    ui->sendPanel->setCanSend(checkedOnlineCount());
 }
 
 void MainWindow::refreshCounters()
@@ -384,7 +448,22 @@ void MainWindow::refreshCounters()
     const int total = m_manager->sessions().size();
     const int online = m_manager->onlineCount();
 
-    ui->sessionCountBadge->setText(QString::number(total));
+    int visible = 0;
+    for (int i = 0; i < ui->sessionList->count(); ++i) {
+        QListWidgetItem* item = ui->sessionList->item(i);
+        if (item && !item->isHidden())
+            ++visible;
+    }
+
+    if (ui->typeFilterCombo->currentIndex() == 0) {
+        ui->sessionCountBadge->setText(QString::number(total));
+        ui->sessionCountBadge->setToolTip(QStringLiteral("会话总数：%1").arg(total));
+    } else {
+        ui->sessionCountBadge->setText(QStringLiteral("%1/%2").arg(visible).arg(total));
+        ui->sessionCountBadge->setToolTip(
+            QStringLiteral("当前过滤显示 %1 个，共 %2 个").arg(visible).arg(total));
+    }
+
     ui->statusInfo->setText(QStringLiteral("%1 个会话 · %2 个在线").arg(total).arg(online));
 }
 
@@ -397,6 +476,7 @@ void MainWindow::onSessionAdded(doulink::Session* session)
 {
     addSessionToUi(session);
     refreshCounters();
+    refreshSendAvailability();
 }
 
 void MainWindow::onSessionRemoved(doulink::SessionId id)
@@ -407,13 +487,15 @@ void MainWindow::onSessionRemoved(doulink::SessionId id)
             delete ui->sessionList->takeItem(row);
     }
 
-    if (m_currentId == id) {
+    if (m_currentId == id)
         m_currentId = 0;
-        if (ui->sessionList->count() > 0)
-            ui->sessionList->setCurrentRow(0);
-        else
-            showEmptyState();
-    }
+
+    applySessionFilter();
+
+    if (m_currentId == 0)
+        selectFirstVisibleSession();
+    if (m_currentId == 0)
+        showEmptyState();
 
     refreshCounters();
     refreshSendAvailability();
@@ -424,16 +506,29 @@ void MainWindow::onCurrentSessionChanged()
     syncCurrentSession();
 }
 
+void MainWindow::onTypeFilterChanged()
+{
+    applySessionFilter();
+    if (!ui->sessionList->currentItem())
+        selectFirstVisibleSession();
+    refreshCounters();
+}
+
+void MainWindow::onSessionItemChanged(QListWidgetItem* item)
+{
+    Q_UNUSED(item);
+    refreshSendAvailability();
+}
+
 void MainWindow::onSessionStateChanged(doulink::Session* session)
 {
     if (!session)
         return;
     refreshSessionItem(session);
     refreshCounters();
-    if (session->id() == m_currentId) {
+    if (session->id() == m_currentId)
         refreshHeader();
-        refreshSendAvailability();
-    }
+    refreshSendAvailability();
 }
 
 void MainWindow::onSessionLogAppended(doulink::Session* session, const doulink::LogEntry& entry)
@@ -501,27 +596,24 @@ void MainWindow::onCloseAll()
 
 void MainWindow::onSendRequested(const QByteArray& payload, const QByteArray& suffix)
 {
-    doulink::Session* session = currentSession();
-    if (!session) {
-        showToast(QStringLiteral("请先选择一个会话"));
-        return;
-    }
-    if (!session->send(payload, suffix)) {
-        ui->sendPanel->stopAutoSend();
-        showToast(QStringLiteral("发送失败，详情见报文日志"));
-    }
-}
-
-void MainWindow::onBroadcastRequested(const QByteArray& payload, const QByteArray& suffix)
-{
     if (!m_manager)
         return;
 
-    const int delivered = m_manager->broadcast(payload, suffix);
-    if (delivered <= 0)
-        showToast(QStringLiteral("没有可接收数据的在线会话"));
-    else
-        showToast(QStringLiteral("已广播到 %1 个会话").arg(delivered));
+    const QVector<doulink::SessionId> ids = checkedSessionIds();
+    if (ids.isEmpty()) {
+        showToast(QStringLiteral("请先勾选要发送的设备"));
+        return;
+    }
+
+    const int delivered = m_manager->sendTo(ids, payload, suffix);
+    if (delivered <= 0) {
+        ui->sendPanel->stopAutoSend();
+        showToast(QStringLiteral("发送失败：勾选的设备均不在线或不可写"));
+        return;
+    }
+
+    if (!ui->sendPanel->isAutoSendActive())
+        showToast(QStringLiteral("已发送到 %1 个设备").arg(delivered));
 }
 
 void MainWindow::onClearLog()
@@ -579,15 +671,6 @@ void MainWindow::onSaveLog()
 void MainWindow::onLogFilterChanged()
 {
     ui->logView->setFilter(ui->searchEdit->text(), ui->directionFilter->currentIndex());
-}
-
-void MainWindow::onPauseToggled(bool paused)
-{
-    ui->logView->setPaused(paused);
-    ui->pauseButton->setText(paused ? QStringLiteral("继续") : QStringLiteral("暂停"));
-    ui->pauseButton->setToolTip(paused
-                                    ? QStringLiteral("恢复实时刷新")
-                                    : QStringLiteral("暂停实时刷新，数据仍会缓存"));
 }
 
 void MainWindow::onHexToggled(bool checked)

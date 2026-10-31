@@ -39,8 +39,13 @@ public:
 
     int onlineCount() const;
 
-    // Sends the same payload to every session that currently accepts writes.
-    // Returns the number of sessions that accepted the payload.
+    // Sends to the selected session ids. Offline/unwritable sessions are
+    // skipped. Returns the number of sessions that accepted the payload.
+    int sendTo(const QVector<SessionId>& ids,
+               const QByteArray& payload,
+               const QByteArray& suffix = QByteArray());
+
+    // Sends to every session that currently accepts writes.
     int broadcast(const QByteArray& payload, const QByteArray& suffix = QByteArray());
 
     void openAll();

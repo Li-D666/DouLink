@@ -34,7 +34,7 @@ LogView::LogView(QWidget* parent)
     setReadOnly(true);
     setUndoRedoEnabled(false);
     setFrameShape(QFrame::NoFrame);
-    setMaximumBlockCount(kMaxEntries);
+    setMaximumBlockCount(kMaxRenderedEntries);
     setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 
     QFont console(QStringLiteral("Consolas"));
@@ -45,6 +45,8 @@ LogView::LogView(QWidget* parent)
     setTabStopDistance(QFontMetricsF(console).horizontalAdvance(QLatin1Char(' ')) * 4.0);
 
     setPlaceholderText(QStringLiteral("暂无报文 — 建立连接后，收发的数据会显示在这里"));
+    setToolTip(QStringLiteral("为保证流畅，界面最多显示最近 %1 条报文；保存日志会导出本会话全部历史。")
+                   .arg(kMaxRenderedEntries));
 }
 
 void LogView::setEntries(const QVector<LogEntry>& entries)
@@ -62,18 +64,13 @@ void LogView::appendEntry(const LogEntry& entry)
         const bool followTail = atBottom();
         m_entries.append(entry);
 
-        int overflow = m_entries.size() - kMaxEntries;
-        if (overflow > 0) {
-            for (int i = 0; i < overflow; ++i) {
-                if (matches(m_entries.at(i)))
-                    --m_visibleCount;
-            }
+        const int overflow = m_entries.size() - kMaxEntries;
+        if (overflow > 0)
             m_entries.remove(0, overflow);
-        }
 
         if (matches(entry)) {
-            ++m_visibleCount;
             appendRendered(entry, followTail);
+            m_visibleCount = qMin(m_visibleCount + 1, kMaxRenderedEntries);
         }
         updatePlaceholder();
         emit countChanged(m_visibleCount, m_entries.size());
@@ -199,12 +196,27 @@ void LogView::renderAll()
     document()->clear();
 
     m_visibleCount = 0;
-    for (const LogEntry& entry : qAsConst(m_entries)) {
+
+    // Find the start of the most recent kMaxRenderedEntries matching entries.
+    int start = m_entries.size();
+    int found = 0;
+    while (start > 0 && found < kMaxRenderedEntries) {
+        --start;
+        if (matches(m_entries.at(start)))
+            ++found;
+    }
+
+    QTextCursor cursor(document());
+    cursor.movePosition(QTextCursor::End);
+    cursor.beginEditBlock();
+    for (int i = start; i < m_entries.size(); ++i) {
+        const LogEntry& entry = m_entries.at(i);
         if (!matches(entry))
             continue;
-        appendRendered(entry, false);
+        appendRenderedTo(cursor, entry);
         ++m_visibleCount;
     }
+    cursor.endEditBlock();
 
     setUpdatesEnabled(true);
     scrollToEnd();
@@ -216,7 +228,13 @@ void LogView::appendRendered(const LogEntry& entry, bool followTail)
 {
     QTextCursor cursor(document());
     cursor.movePosition(QTextCursor::End);
+    appendRenderedTo(cursor, entry);
+    if (followTail)
+        scrollToEnd();
+}
 
+void LogView::appendRenderedTo(QTextCursor& cursor, const LogEntry& entry)
+{
     QTextBlockFormat blockFormat;
     blockFormat.setBottomMargin(2.0);
     blockFormat.setLineHeight(112.0, QTextBlockFormat::ProportionalHeight);
@@ -283,9 +301,6 @@ void LogView::appendRendered(const LogEntry& entry, bool followTail)
         cursor.insertText(Bytes::toDisplay(entry.payload, m_format),
                           coloredText(payloadColor));
     }
-
-    if (followTail)
-        scrollToEnd();
 }
 
 void LogView::scrollToEnd()

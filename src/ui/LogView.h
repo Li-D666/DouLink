@@ -5,11 +5,14 @@
 #include <QPlainTextEdit>
 #include <QVector>
 
+class QTextCursor;
+
 namespace doulink {
 namespace ui {
 
-// Rich, bounded, per-session serial console. Keeps its own copy of the entries
-// so filters / text-vs-hex switching can re-render instantly.
+// Rich, bounded, per-session serial console. Keeps the full recent history for
+// filtering/export, but only renders a recent window so switching sessions or
+// toggling text/HEX/timestamps stays responsive.
 class LogView : public QPlainTextEdit
 {
     Q_OBJECT
@@ -40,7 +43,9 @@ public:
     void setFilter(const QString& text, int directionFilter);
     QString exportText() const;
 
+    // Rendered into the document (bounded by kMaxRenderedEntries).
     int visibleCount() const { return m_visibleCount; }
+    // Retained history size (used by exportText()).
     int totalCount() const { return m_entries.size(); }
 
 signals:
@@ -51,13 +56,17 @@ private:
     QString entryAsPlainText(const LogEntry& entry) const;
     void renderAll();
     void appendRendered(const LogEntry& entry, bool followTail);
+    void appendRenderedTo(QTextCursor& cursor, const LogEntry& entry);
     void scrollToEnd();
     void updatePlaceholder();
     bool atBottom() const;
 
     static QString directionTag(Direction direction);
 
+    // Full history retained by the view (and used by exportText()).
     static constexpr int kMaxEntries = 5000;
+    // Only this many matching entries are rendered into the document.
+    static constexpr int kMaxRenderedEntries = 1000;
 
     QVector<LogEntry> m_entries;
     DataFormat m_format = DataFormat::Text;

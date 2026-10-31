@@ -137,7 +137,7 @@ MainWindow::onSessionLogAppended
 SendPanel（文本/HEX 解析 + 结尾符）
         │ sendRequested(payload, suffix)
         ▼
-MainWindow（当前会话 / 广播）
+MainWindow（勾选设备集合）
         ▼
 Session::send(payload, suffix)
         ├─ 检查在线状态
@@ -147,7 +147,7 @@ Session::send(payload, suffix)
         └─ appendLog(Tx, frame, txPeerLabel())
 ```
 
-“广播到全部”由 `SessionManager::broadcast()` 遍历所有在线会话，各自执行 `send()`；因此每个会话的 TX 日志、统计仍相互独立。TCP 服务端会话内部再向所有已接入客户端广播。
+会话列表中的勾选框组成目标集合；发送时 `MainWindow` 收集勾选的 `SessionId`，交给 `SessionManager::sendTo()` 只向这些会话执行 `send()`。因此每个目标的 TX 日志、统计仍相互独立；TCP 服务端会话内部再向所有已接入客户端广播。
 
 ## 6. 并发模型
 
@@ -156,7 +156,7 @@ Session::send(payload, suffix)
 - **多客户端隔离**：TCP 服务端以 socket 为键维护 peer；接收数据按 peer 进入各自的 codec，日志前缀显示客户端地址；发送广播到所有 socket。
 - **UDP 来源隔离**：每个发送方地址/端口一个 codec，日志显示来源；发送目标由配置决定。
 - **空闲定时器**：仅 `IdleGap` 模式创建，单次触发；收到新数据即重启；peer 断开时停止并释放。
-- **日志上限**：每会话日志最多 5000 条，避免长时间调试导致内存无限增长；UI 用 `QPlainTextEdit::setMaximumBlockCount` 做渲染侧保护。
+- **日志上限**：每会话日志最多 5000 条，避免长时间调试导致内存无限增长；UI 只把最近 1000 条渲染进 `QPlainTextEdit`（`setMaximumBlockCount`），切换会话/文本-HEX/时间戳时不重排全部历史，导出仍覆盖完整 5000 条。
 
 ## 7. 状态与错误处理
 
@@ -180,17 +180,7 @@ Session::send(payload, suffix)
    - 事务 ID、单元 ID 可在日志的 note 字段中展示。
 3. 无论哪种方式，CRC16、MBAP、功能码都手写在 core/app 层，不依赖 Qt Modbus。
 
-## 9. 测试策略
-
-`tests/test_main.cpp` 不启动 GUI：
-
-- `ByteCodec`、`FrameCodec` 纯函数测试；
-- 用 `FakeTransport` 测试 `Session` 生命周期、发送、多 peer 分帧、空闲分帧、错误状态；
-- 测试 `SessionManager` 多会话并发与广播；
-- 使用本机 `127.0.0.1` 做真实 `TcpServerTransport ↔ TcpClientTransport`、`UdpTransport ↔ UdpTransport` 回环测试；
-- 串口部分不做自动化，需要真实设备/虚拟串口。
-
-## 10. 可扩展点
+## 9. 可扩展点
 
 - 新传输：实现 `ITransport`，在 `infra::createTransport()` 注册，UI 的类型枚举与对话框增加一项即可。
 - 新分帧：扩展 `FrameMode` 与 `FrameCodec`。

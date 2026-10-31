@@ -14,13 +14,13 @@ std::unique_ptr<ITransport> createTransport(TransportKind kind)
 {
     switch (kind) {
     case TransportKind::Serial:
-        return std::make_unique<SerialTransport>();
+        return std::unique_ptr<ITransport>(new SerialTransport());
     case TransportKind::TcpClient:
-        return std::make_unique<TcpClientTransport>();
+        return std::unique_ptr<ITransport>(new TcpClientTransport());
     case TransportKind::TcpServer:
-        return std::make_unique<TcpServerTransport>();
+        return std::unique_ptr<ITransport>(new TcpServerTransport());
     case TransportKind::Udp:
-        return std::make_unique<UdpTransport>();
+        return std::unique_ptr<ITransport>(new UdpTransport());
     }
     return nullptr;
 }
