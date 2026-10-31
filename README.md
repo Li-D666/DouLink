@@ -93,6 +93,8 @@ cmake --build build -j
 
 > CMakeLists 已处理 CMake 4.x 读取旧版 Qt 5 CMake 配置时的 policy 兼容问题。
 >
+> Windows 可执行文件图标由 `resources/app.rc.in` 在链接时嵌入；`QApplication::setWindowIcon()` 只设置运行中的窗口图标。若资源管理器仍显示旧图标，可刷新图标缓存或重新创建快捷方式。
+>
 > 界面布局位于 `src/ui/mainwindow.ui`、`sessiondialog.ui`、`sendpanel.ui`，由 CMake 的 `AUTOUIC` 生成 `ui_*.h`；修改 `.ui` 后重新执行 CMake 配置/构建即可。
 >
 > 如果使用 MSVC，请选择与 Qt 套件 ABI 匹配的编译器，并把 `CMAKE_PREFIX_PATH` 指向对应的 `msvc20xx_64` 目录。
@@ -152,7 +154,9 @@ DouLink/
 ├─ README.md
 ├─ docs/ARCHITECTURE.md
 ├─ resources/
+│  ├─ app.ico
 │  ├─ app.png
+│  ├─ app.rc.in
 │  ├─ resources.qrc
 │  ├─ theme_dark.qss
 │  └─ theme_light.qss

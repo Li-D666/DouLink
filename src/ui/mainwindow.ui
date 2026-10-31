@@ -1011,16 +1011,6 @@ RS-232/RS-485/USB</string>
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QLabel" name="versionLabel">
-         <property name="text">
-          <string>DouLink</string>
-         </property>
-         <property name="role" stdset="0">
-          <string>hint</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>

@@ -8,6 +8,10 @@ endif()
 
 project(DouLink VERSION 1.0.0 LANGUAGES CXX)
 
+if(WIN32)
+    enable_language(RC)
+endif()
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -92,4 +96,15 @@ target_link_libraries(DouLink PRIVATE
 
 if(WIN32)
     set_target_properties(DouLink PROPERTIES WIN32_EXECUTABLE TRUE)
+
+    # Embed the app icon into the PE file. QApplication::setWindowIcon() only
+    # affects the running window; Explorer/taskbar use the executable resource.
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/resources/app.rc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/app.rc"
+        @ONLY
+    )
+    target_sources(DouLink PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/app.rc")
+    set_property(SOURCE "${CMAKE_CURRENT_BINARY_DIR}/app.rc" APPEND PROPERTY
+        OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/resources/app.ico")
 endif()

@@ -18,7 +18,6 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     QApplication::setApplicationName(QStringLiteral("DouLink"));
     QApplication::setApplicationVersion(QStringLiteral("1.0.1"));
-    QApplication::setOrganizationName(QStringLiteral("DouLink"));
 
     if (QStyle* fusion = QStyleFactory::create(QStringLiteral("Fusion")))
         QApplication::setStyle(fusion);

@@ -822,10 +822,10 @@ void MainWindow::onAbout()
     QMessageBox::about(
         this,
         QStringLiteral("关于 DouLink"),
-        QStringLiteral("<b>DouLink 1.0</b><br><br>"
+        QString("<b>DouLink %1</b><br><br>"
                        "串口 / TCP / UDP 多设备调试助手<br>"
                        "分层架构 · 异步 I/O · 多会话并发<br>"
-                       "时间戳与方向彩色报文日志<br><br>"));
+                       "时间戳与方向彩色报文日志<br><br>").arg(qApp->applicationVersion()));
 }
 
 void MainWindow::showToast(const QString& message)
