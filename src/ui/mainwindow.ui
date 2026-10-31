@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1320</width>
+    <height>840</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1080</width>
+    <height>680</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>DouLink · 串口 / 网络调试助手</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="rootLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="appHeader">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>66</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>66</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="headerLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="leftMargin">
+        <number>20</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>20</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="BrandMark" name="brandMark"/>
+       </item>
+       <item>
+        <widget class="QWidget" name="titleBox" native="true">
+         <layout class="QVBoxLayout" name="titleLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="brandTitle">
+            <property name="role" stdset="0">
+             <string>brandTitle</string>
+            </property>
+            <property name="text">
+             <string>DouLink</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="brandSubtitle">
+            <property name="role" stdset="0">
+             <string>brandSubtitle</string>
+            </property>
+            <property name="text">
+             <string>串口 / TCP / UDP 多设备调试台</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="headerSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="openAllButton">
+         <property name="role" stdset="0">
+          <string>ghost</string>
+         </property>
+         <property name="text">
+          <string>全部连接</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="closeAllButton">
+         <property name="role" stdset="0">
+          <string>ghost</string>
+         </property>
+         <property name="text">
+          <string>全部断开</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="newButton">
+         <property name="role" stdset="0">
+          <string>primary</string>
+         </property>
+         <property name="text">
+          <string>＋ 新建连接</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="aboutButton">
+         <property name="role" stdset="0">
+          <string>icon</string>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>?</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSplitter" name="mainSplitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
+      </property>
+      <property name="handleWidth">
+       <number>1</number>
+      </property>
+      <widget class="QFrame" name="sidePanel">
+       <property name="minimumSize">
+        <size>
+         <width>286</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>380</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <layout class="QVBoxLayout" name="sideLayout">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>16</number>
+        </property>
+        <property name="topMargin">
+         <number>18</number>
+        </property>
+        <property name="rightMargin">
+         <number>16</number>
+        </property>
+        <property name="bottomMargin">
+         <number>14</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="sideHeaderLayout">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="sideTitle">
+            <property name="role" stdset="0">
+             <string>panelTitle</string>
+            </property>
+            <property name="text">
+             <string>连接会话</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="sideHeaderSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="sessionCountBadge">
+            <property name="role" stdset="0">
+             <string>countPill</string>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QListWidget" name="sessionList">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="verticalScrollMode">
+           <enum>QAbstractItemView::ScrollPerPixel</enum>
+          </property>
+          <property name="uniformItemSizes">
+           <bool>true</bool>
+          </property>
+          <property name="spacing">
+           <number>2</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="sideHint">
+          <property name="role" stdset="0">
+           <string>hint</string>
+          </property>
+          <property name="text">
+           <string>可同时建立多个串口 / 网络连接。
+右键会话可重命名、复制或删除。</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="sideNewButton">
+          <property name="role" stdset="0">
+           <string>secondary</string>
+          </property>
+          <property name="text">
+           <string>＋ 新建连接</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="rightPane">
+       <layout class="QVBoxLayout" name="rightLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>18</number>
+        </property>
+        <property name="topMargin">
+         <number>16</number>
+        </property>
+        <property name="rightMargin">
+         <number>18</number>
+        </property>
+        <property name="bottomMargin">
+         <number>18</number>
+        </property>
+        <item>
+         <widget class="QStackedWidget" name="stack">
+          <widget class="QWidget" name="emptyPage">
+           <layout class="QVBoxLayout" name="emptyLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>40</number>
+            </property>
+            <property name="topMargin">
+             <number>30</number>
+            </property>
+            <property name="rightMargin">
+             <number>40</number>
+            </property>
+            <property name="bottomMargin">
+             <number>40</number>
+            </property>
+            <item>
+             <spacer name="emptyTopSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="BrandMark" name="emptyMark">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="emptyTitle">
+              <property name="role" stdset="0">
+               <string>emptyTitle</string>
+              </property>
+              <property name="text">
+               <string>连接你的第一个设备</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="emptyTitleSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>8</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="emptySubtitle">
+              <property name="role" stdset="0">
+               <string>muted</string>
+              </property>
+              <property name="text">
+               <string>串口 · TCP · UDP　|　多设备并行收发与逐帧彩色日志</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="emptyCardsTopSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>26</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="cardsRow">
+              <property name="spacing">
+               <number>14</number>
+              </property>
+              <item>
+               <spacer name="cardsLeftSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="serialCard">
+                <property name="role" stdset="0">
+                 <string>launch</string>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>108</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>108</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>串口
+RS-232 / RS-485 / USB</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="tcpCard">
+                <property name="role" stdset="0">
+                 <string>launch</string>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>108</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>108</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>TCP
+客户端 / 服务端</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="udpCard">
+                <property name="role" stdset="0">
+                 <string>launch</string>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>108</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>108</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>UDP
+单播 / 广播</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="cardsRightSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="emptyHintTopSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="emptyHint">
+              <property name="role" stdset="0">
+               <string>hint</string>
+              </property>
+              <property name="text">
+               <string>也可以点击右上角「新建连接」，随时添加更多设备。</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="emptyBottomSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="sessionPage">
+           <layout class="QVBoxLayout" name="sessionLayout">
+            <property name="spacing">
+             <number>12</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QFrame" name="sessionHeaderCard">
+              <property name="role" stdset="0">
+               <string>card</string>
+              </property>
+              <layout class="QVBoxLayout" name="sessionHeaderLayout">
+               <property name="spacing">
+                <number>8</number>
+               </property>
+               <property name="leftMargin">
+                <number>18</number>
+               </property>
+               <property name="topMargin">
+                <number>14</number>
+               </property>
+               <property name="rightMargin">
+                <number>18</number>
+               </property>
+               <property name="bottomMargin">
+                <number>14</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="sessionTopRow">
+                 <property name="spacing">
+                  <number>10</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="nameLabel">
+                   <property name="role" stdset="0">
+                    <string>sessionTitle</string>
+                   </property>
+                   <property name="text">
+                    <string>会话</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="stateBadge">
+                   <property name="role" stdset="0">
+                    <string>stateBadge</string>
+                   </property>
+                   <property name="state" stdset="0">
+                    <string>offline</string>
+                   </property>
+                   <property name="text">
+                    <string>未连接</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="sessionTopSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="duplicateButton">
+                   <property name="role" stdset="0">
+                    <string>small</string>
+                   </property>
+                   <property name="text">
+                    <string>复制配置</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="toggleButton">
+                   <property name="role" stdset="0">
+                    <string>ghost</string>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>96</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>连接</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QLabel" name="endpointLabel">
+                 <property name="role" stdset="0">
+                  <string>muted</string>
+                 </property>
+                 <property name="text">
+                  <string>—</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="statsRow">
+                 <property name="spacing">
+                  <number>8</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="rxStat">
+                   <property name="role" stdset="0">
+                    <string>statChip</string>
+                   </property>
+                   <property name="direction" stdset="0">
+                    <string>rx</string>
+                   </property>
+                   <property name="text">
+                    <string>RX  0 B · 0 帧</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="txStat">
+                   <property name="role" stdset="0">
+                    <string>statChip</string>
+                   </property>
+                   <property name="direction" stdset="0">
+                    <string>tx</string>
+                   </property>
+                   <property name="text">
+                    <string>TX  0 B · 0 帧</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="rateStat">
+                   <property name="role" stdset="0">
+                    <string>statChip</string>
+                   </property>
+                   <property name="text">
+                    <string>速率  ↓ 0 B/s  ↑ 0 B/s</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="peerStat">
+                   <property name="role" stdset="0">
+                    <string>statChip</string>
+                   </property>
+                   <property name="text">
+                    <string>对端  0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="statsSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="logCard">
+              <property name="role" stdset="0">
+               <string>card</string>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <layout class="QVBoxLayout" name="logCardLayout">
+               <property name="spacing">
+                <number>8</number>
+               </property>
+               <property name="leftMargin">
+                <number>16</number>
+               </property>
+               <property name="topMargin">
+                <number>12</number>
+               </property>
+               <property name="rightMargin">
+                <number>16</number>
+               </property>
+               <property name="bottomMargin">
+                <number>12</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="logToolbar">
+                 <property name="spacing">
+                  <number>8</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="logTitle">
+                   <property name="role" stdset="0">
+                    <string>cardTitle</string>
+                   </property>
+                   <property name="text">
+                    <string>报文日志</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="logMeta">
+                   <property name="role" stdset="0">
+                    <string>hint</string>
+                   </property>
+                   <property name="text">
+                    <string>0 条</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="logToolbarSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="directionFilter">
+                   <property name="minimumSize">
+                    <size>
+                     <width>84</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>全部</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>接收</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>发送</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>系统</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="searchEdit">
+                   <property name="minimumSize">
+                    <size>
+                     <width>130</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>180</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="placeholderText">
+                    <string>搜索报文…</string>
+                   </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="timeToggle">
+                   <property name="text">
+                    <string>时间</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="hexToggle">
+                   <property name="text">
+                    <string>HEX</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pauseButton">
+                   <property name="role" stdset="0">
+                    <string>small</string>
+                   </property>
+                   <property name="text">
+                    <string>暂停</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="clearButton">
+                   <property name="role" stdset="0">
+                    <string>small</string>
+                   </property>
+                   <property name="text">
+                    <string>清空</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="saveButton">
+                   <property name="role" stdset="0">
+                    <string>small</string>
+                   </property>
+                   <property name="text">
+                    <string>保存</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="doulink::ui::LogView" name="logView"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="doulink::ui::SendPanel" name="sendPanel"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="statusFooter">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="statusLayout">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="leftMargin">
+        <number>20</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="statusInfo">
+         <property name="role" stdset="0">
+          <string>statusText</string>
+         </property>
+         <property name="text">
+          <string>0 个会话 · 0 个在线</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="statusToast">
+         <property name="role" stdset="0">
+          <string>statusToast</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="statusSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="versionLabel">
+         <property name="role" stdset="0">
+          <string>hint</string>
+         </property>
+         <property name="text">
+          <string>DouLink 1.0 · C++17 / Qt 5</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>BrandMark</class>
+   <extends>QWidget</extends>
+   <header>ui/BrandMark.h</header>
+   <container>0</container>
+  </customwidget>
+  <customwidget>
+   <class>doulink::ui::LogView</class>
+   <extends>QPlainTextEdit</extends>
+   <header>ui/LogView.h</header>
+   <container>0</container>
+  </customwidget>
+  <customwidget>
+   <class>doulink::ui::SendPanel</class>
+   <extends>QFrame</extends>
+   <header>ui/SendPanel.h</header>
+   <container>0</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

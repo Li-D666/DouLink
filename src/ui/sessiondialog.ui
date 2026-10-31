@@ -1,0 +1,1198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SessionDialog</class>
+ <widget class="QDialog" name="SessionDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>860</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>560</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>新建连接 · DouLink</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="dialogLayout">
+   <property name="spacing">
+    <number>14</number>
+   </property>
+   <property name="leftMargin">
+    <number>24</number>
+   </property>
+   <property name="topMargin">
+    <number>22</number>
+   </property>
+   <property name="rightMargin">
+    <number>24</number>
+   </property>
+   <property name="bottomMargin">
+    <number>18</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="dialogTitle">
+     <property name="role" stdset="0">
+      <string>dialogTitle</string>
+     </property>
+     <property name="text">
+      <string>新建连接</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="dialogSubtitle">
+     <property name="role" stdset="0">
+      <string>hint</string>
+     </property>
+     <property name="text">
+      <string>配置串口或网络参数；创建后可与其它会话并行收发，互不阻塞。</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="bodyLayout">
+     <property name="spacing">
+      <number>18</number>
+     </property>
+     <item>
+      <widget class="QWidget" name="leftPane" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QVBoxLayout" name="leftLayout">
+        <property name="spacing">
+         <number>12</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QFormLayout" name="formLayout">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          </property>
+          <property name="horizontalSpacing">
+           <number>14</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>10</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="kindLabel">
+            <property name="role" stdset="0">
+             <string>field</string>
+            </property>
+            <property name="text">
+             <string>连接类型</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="kindCombo">
+            <item>
+             <property name="text">
+              <string>串口 (Serial)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>TCP 客户端</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>TCP 服务端</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>UDP</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="nameLabel">
+            <property name="role" stdset="0">
+             <string>field</string>
+            </property>
+            <property name="text">
+             <string>会话名称</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="nameEdit">
+            <property name="placeholderText">
+             <string>留空则自动命名</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QStackedWidget" name="pages">
+          <widget class="QWidget" name="serialPage">
+           <layout class="QGridLayout" name="serialGrid">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>10</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>10</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="portLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>串口</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="3">
+             <widget class="QWidget" name="portRow" native="true">
+              <layout class="QHBoxLayout" name="portLayout">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="portCombo">
+                 <property name="minimumSize">
+                  <size>
+                   <width>220</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="refreshButton">
+                 <property name="role" stdset="0">
+                  <string>small</string>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>58</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>58</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>刷新</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="baudLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>波特率</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="baudCombo">
+              <property name="editable">
+               <bool>true</bool>
+              </property>
+              <property name="insertPolicy">
+               <enum>QComboBox::NoInsert</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>1200</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>2400</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>4800</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>9600</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>19200</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>38400</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>57600</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>115200</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>230400</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>460800</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>921600</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="dataBitsLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>数据位</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QComboBox" name="dataBitsCombo">
+              <item>
+               <property name="text">
+                <string>5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>6</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>7</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>8</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="parityLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>校验位</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="parityCombo">
+              <item>
+               <property name="text">
+                <string>无校验</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>偶校验</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>奇校验</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>空格</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>标记</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="stopBitsLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>停止位</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QComboBox" name="stopBitsCombo">
+              <item>
+               <property name="text">
+                <string>1 位</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1.5 位</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>2 位</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="flowLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>流控</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="3">
+             <widget class="QComboBox" name="flowControlCombo">
+              <item>
+               <property name="text">
+                <string>无</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>硬件 (RTS/CTS)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>软件 (XON/XOFF)</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tcpClientPage">
+           <layout class="QFormLayout" name="tcpClientForm">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
+            <property name="horizontalSpacing">
+             <number>14</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>10</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="tcpHostLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>目标地址</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="tcpHostEdit">
+              <property name="text">
+               <string>127.0.0.1</string>
+              </property>
+              <property name="placeholderText">
+               <string>IP 地址或主机名</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="tcpPortLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>目标端口</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="tcpPortSpin">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>65535</number>
+              </property>
+              <property name="value">
+               <number>8080</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="timeoutLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>连接超时</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QSpinBox" name="connectTimeoutSpin">
+              <property name="minimum">
+               <number>500</number>
+              </property>
+              <property name="maximum">
+               <number>60000</number>
+              </property>
+              <property name="singleStep">
+               <number>500</number>
+              </property>
+              <property name="suffix">
+               <string> ms</string>
+              </property>
+              <property name="value">
+               <number>5000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QLabel" name="tcpClientNote">
+              <property name="role" stdset="0">
+               <string>hint</string>
+              </property>
+              <property name="text">
+               <string>主动连接远端 TCP 服务。连接建立后，日志会记录连接状态和数据往返。</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tcpServerPage">
+           <layout class="QFormLayout" name="tcpServerForm">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
+            <property name="horizontalSpacing">
+             <number>14</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>10</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="listenAddressLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>监听地址</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="listenAddressEdit">
+              <property name="text">
+               <string>0.0.0.0</string>
+              </property>
+              <property name="placeholderText">
+               <string>0.0.0.0 表示监听所有网卡</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="listenPortLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>监听端口</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="listenPortSpin">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>65535</number>
+              </property>
+              <property name="value">
+               <number>9000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QLabel" name="tcpServerNote">
+              <property name="role" stdset="0">
+               <string>hint</string>
+              </property>
+              <property name="text">
+               <string>一个服务端会话可同时接入多个客户端；发送会广播给所有已连接客户端，每个客户端独立分帧并在日志中标注来源。</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="udpPage">
+           <layout class="QFormLayout" name="udpForm">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
+            <property name="horizontalSpacing">
+             <number>14</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>10</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="udpLocalPortLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>本机端口</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="udpLocalPortSpin">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>65535</number>
+              </property>
+              <property name="specialValueText">
+               <string>自动分配</string>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="udpRemoteHostLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>目标地址</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="udpRemoteHostEdit">
+              <property name="text">
+               <string>127.0.0.1</string>
+              </property>
+              <property name="placeholderText">
+               <string>留空则仅接收</string>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="udpRemotePortLabel">
+              <property name="role" stdset="0">
+               <string>field</string>
+              </property>
+              <property name="text">
+               <string>目标端口</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QSpinBox" name="udpRemotePortSpin">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>65535</number>
+              </property>
+              <property name="specialValueText">
+               <string>未设置</string>
+              </property>
+              <property name="value">
+               <number>9000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QLabel" name="udpNote">
+              <property name="role" stdset="0">
+               <string>hint</string>
+              </property>
+              <property name="text">
+               <string>UDP 接收来自任意来源，日志会标注发送方地址；发送发往目标地址。目标地址可填 255.255.255.255 进行广播。</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="rightPane" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>330</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>330</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <layout class="QVBoxLayout" name="rightLayout">
+        <property name="spacing">
+         <number>12</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QGroupBox" name="framingGroup">
+          <property name="title">
+           <string>接收分帧</string>
+          </property>
+          <layout class="QVBoxLayout" name="framingLayout">
+           <property name="spacing">
+            <number>8</number>
+           </property>
+           <property name="leftMargin">
+            <number>16</number>
+           </property>
+           <property name="topMargin">
+            <number>18</number>
+           </property>
+           <property name="rightMargin">
+            <number>16</number>
+           </property>
+           <property name="bottomMargin">
+            <number>12</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="frameModeRow" native="true">
+             <layout class="QHBoxLayout" name="frameModeRowLayout">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="frameModeLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>82</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>82</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="role" stdset="0">
+                 <string>field</string>
+                </property>
+                <property name="text">
+                 <string>分帧方式</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="frameModeCombo">
+                <item>
+                 <property name="text">
+                  <string>原始数据（按接收块）</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>换行符分帧</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>空闲间隔分帧</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="delimiterRow" native="true">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+             <layout class="QHBoxLayout" name="delimiterRowLayout">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="delimiterLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>82</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>82</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="role" stdset="0">
+                 <string>field</string>
+                </property>
+                <property name="text">
+                 <string>分隔符</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="delimiterCombo">
+                <item>
+                 <property name="text">
+                  <string>CRLF  \r\n</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>LF  \n</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CR  \r</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>自定义 HEX</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="customDelimiterRow" native="true">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+             <layout class="QHBoxLayout" name="customDelimiterRowLayout">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="customDelimiterLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>82</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>82</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="role" stdset="0">
+                 <string>field</string>
+                </property>
+                <property name="text">
+                 <string>自定义分隔符</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="customDelimiterEdit">
+                <property name="text">
+                 <string>0D 0A</string>
+                </property>
+                <property name="placeholderText">
+                 <string>HEX，例如 0D 0A 或 7C</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="idleRow" native="true">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+             <layout class="QHBoxLayout" name="idleRowLayout">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="idleLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>82</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>82</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="role" stdset="0">
+                 <string>field</string>
+                </property>
+                <property name="text">
+                 <string>空闲间隔</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="idleGapSpin">
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>5000</number>
+                </property>
+                <property name="suffix">
+                 <string> ms</string>
+                </property>
+                <property name="value">
+                 <number>30</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="frameHint">
+             <property name="role" stdset="0">
+              <string>hint</string>
+             </property>
+             <property name="text">
+              <string>每次收到的数据块直接作为一条报文，适合二进制协议或自行切分。</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="tipsTitle">
+          <property name="role" stdset="0">
+           <string>cardTitle</string>
+          </property>
+          <property name="text">
+           <string>使用提示</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="tips">
+          <property name="role" stdset="0">
+           <string>hint</string>
+          </property>
+          <property name="text">
+           <string>• 每个会话拥有独立的连接、分帧状态和报文日志
+• 可同时创建多个串口 / TCP / UDP 会话
+• TCP 服务端会话可接入多个客户端，并向全部客户端广播发送
+• 发送结尾在主界面“发送数据”区域单独设置</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="rightSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="errorLabel">
+     <property name="role" stdset="0">
+      <string>error</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="visible">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="footerLayout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <item>
+      <spacer name="footerSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="role" stdset="0">
+        <string>ghost</string>
+       </property>
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="createButton">
+       <property name="role" stdset="0">
+        <string>primary</string>
+       </property>
+       <property name="text">
+        <string>创建并连接</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SendPanel</class>
+ <widget class="QFrame" name="SendPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>820</width>
+    <height>230</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::NoFrame</enum>
+  </property>
+  <property name="role" stdset="0">
+   <string>card</string>
+  </property>
+  <layout class="QVBoxLayout" name="rootLayout">
+   <property name="spacing">
+    <number>9</number>
+   </property>
+   <property name="leftMargin">
+    <number>16</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>16</number>
+   </property>
+   <property name="bottomMargin">
+    <number>14</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="headerLayout">
+     <property name="spacing">
+      <number>8</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="titleLabel">
+       <property name="role" stdset="0">
+        <string>cardTitle</string>
+       </property>
+       <property name="text">
+        <string>发送数据</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="formatBox" native="true">
+       <layout class="QHBoxLayout" name="formatLayout">
+        <property name="spacing">
+         <number>4</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="textButton">
+          <property name="role" stdset="0">
+           <string>segment</string>
+          </property>
+          <property name="text">
+           <string>文本</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="hexButton">
+          <property name="role" stdset="0">
+           <string>segment</string>
+          </property>
+          <property name="text">
+           <string>HEX</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="headerSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="suffixLabel">
+       <property name="role" stdset="0">
+        <string>hint</string>
+       </property>
+       <property name="text">
+        <string>结尾</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="suffixCombo">
+       <property name="minimumSize">
+        <size>
+         <width>112</width>
+         <height>0</height>
+        </size>
+       </property>
+       <item>
+        <property name="text">
+         <string>无</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CRLF  \r\n</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>LF  \n</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CR  \r</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>自定义 HEX</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="customSuffixLabel">
+       <property name="role" stdset="0">
+        <string>hint</string>
+       </property>
+       <property name="text">
+        <string>HEX</string>
+       </property>
+       <property name="visible">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="customSuffix">
+       <property name="maximumSize">
+        <size>
+         <width>96</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>0D 0A</string>
+       </property>
+       <property name="placeholderText">
+        <string>自定义结尾</string>
+       </property>
+       <property name="visible">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QPlainTextEdit" name="input">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>72</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>118</height>
+      </size>
+     </property>
+     <property name="placeholderText">
+      <string>输入要发送的内容…
+Ctrl+Enter 快速发送</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="footerLayout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="meta">
+       <property name="role" stdset="0">
+        <string>hint</string>
+       </property>
+       <property name="text">
+        <string>等待输入…</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="footerSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="autoCheck">
+       <property name="text">
+        <string>定时发送</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="intervalSpin">
+       <property name="minimumSize">
+        <size>
+         <width>98</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>50</number>
+       </property>
+       <property name="maximum">
+        <number>600000</number>
+       </property>
+       <property name="singleStep">
+        <number>50</number>
+       </property>
+       <property name="suffix">
+        <string> ms</string>
+       </property>
+       <property name="value">
+        <number>1000</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="broadcastButton">
+       <property name="role" stdset="0">
+        <string>ghost</string>
+       </property>
+       <property name="text">
+        <string>广播到全部</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="sendButton">
+       <property name="role" stdset="0">
+        <string>primary</string>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>88</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>发送</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
