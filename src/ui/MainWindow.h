@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Types.h"
+#include "ui/Theme.h"
 
 #include <QHash>
 #include <QMainWindow>
@@ -17,6 +18,10 @@ class MainWindow;
 namespace doulink {
 class Session;
 class SessionManager;
+
+namespace ui {
+class SessionListDelegate;
+}
 }
 
 class MainWindow : public QMainWindow
@@ -39,6 +44,7 @@ private slots:
     void onHistoryCleared(doulink::Session* session);
     void onTypeFilterChanged();
     void onSessionItemChanged(QListWidgetItem* item);
+    void onThemeToggled();
 
     void onToggleSession();
     void onOpenAll();
@@ -76,6 +82,8 @@ private:
     void syncCurrentSession();
     void showToast(const QString& message);
     QString suggestedLogFileName() const;
+    void applyTheme(doulink::ui::Theme theme);
+    void updateThemeButton();
 
     Ui::MainWindow* ui = nullptr;
     doulink::SessionManager* m_manager = nullptr;
@@ -83,4 +91,6 @@ private:
 
     QHash<doulink::SessionId, QListWidgetItem*> m_items;
     doulink::SessionId m_currentId = doulink::kInvalidSessionId;
+    doulink::ui::SessionListDelegate* m_sessionDelegate = nullptr;
+    doulink::ui::Theme m_theme = doulink::ui::Theme::Dark;
 };

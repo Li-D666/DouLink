@@ -225,6 +225,9 @@ Ctrl+Enter 快速发送</string>
        <property name="text">
         <string>等待输入…</string>
        </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
        <property name="role" stdset="0">
         <string>hint</string>
        </property>

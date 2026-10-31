@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ui/Theme.h"
+
 #include <QStyledItemDelegate>
 
 class QAbstractItemModel;
@@ -25,6 +27,8 @@ class SessionListDelegate : public QStyledItemDelegate
 public:
     explicit SessionListDelegate(QObject* parent = nullptr);
 
+    void setTheme(Theme theme);
+
     void paint(QPainter* painter,
                const QStyleOptionViewItem& option,
                const QModelIndex& index) const override;
@@ -33,6 +37,9 @@ public:
                      QAbstractItemModel* model,
                      const QStyleOptionViewItem& option,
                      const QModelIndex& index) override;
+
+private:
+    Theme m_theme = Theme::Dark;
 };
 
 } // namespace ui

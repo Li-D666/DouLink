@@ -26,6 +26,7 @@ public:
     void setCanSend(int onlineTargetCount);
     bool isAutoSendActive() const;
     void stopAutoSend();
+    void refreshTheme();
 
 signals:
     void sendRequested(const QByteArray& payload, const QByteArray& suffix);
@@ -43,10 +44,12 @@ private:
                       QString* error,
                       bool* empty) const;
     void fireTimer();
+    void setMetaError(bool error);
 
     ::Ui::SendPanel* ui = nullptr;
     QTimer* m_timer = nullptr;
     int m_targetCount = 0;
+    bool m_metaError = false;
 };
 
 } // namespace ui

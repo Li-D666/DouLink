@@ -11,8 +11,10 @@
 #include <QPushButton>
 #include <QShortcut>
 #include <QSpinBox>
+#include <QStyle>
 #include <QTimer>
 #include <QToolButton>
+#include <QVariant>
 
 namespace doulink {
 namespace ui {
@@ -76,6 +78,28 @@ void SendPanel::setCanSend(int onlineTargetCount)
         ui->autoCheck->setChecked(false);
 
     updateMeta();
+}
+
+void SendPanel::refreshTheme()
+{
+    ui->meta->setProperty("state",
+                          m_metaError ? QVariant(QStringLiteral("error")) : QVariant());
+    ui->meta->style()->unpolish(ui->meta);
+    ui->meta->style()->polish(ui->meta);
+    updateMeta();
+}
+
+void SendPanel::setMetaError(bool error)
+{
+    if (m_metaError == error)
+        return;
+
+    m_metaError = error;
+    ui->meta->setProperty("state",
+                          error ? QVariant(QStringLiteral("error")) : QVariant());
+    ui->meta->style()->unpolish(ui->meta);
+    ui->meta->style()->polish(ui->meta);
+    ui->meta->update();
 }
 
 bool SendPanel::isAutoSendActive() const
@@ -184,7 +208,7 @@ void SendPanel::updateMeta()
     const bool parsed = buildPayload(&payload, &suffix, &error, &empty);
 
     if (!parsed) {
-        ui->meta->setStyleSheet(QStringLiteral("color: #f87171;"));
+        setMetaError(true);
         ui->meta->setText(error);
         ui->sendButton->setEnabled(false);
         if (ui->autoCheck->isChecked())
@@ -199,7 +223,7 @@ void SendPanel::updateMeta()
         else
             text += QStringLiteral(" · 没有可发送的在线设备");
 
-        ui->meta->setStyleSheet(QString());
+        setMetaError(false);
         ui->meta->setText(text);
         ui->sendButton->setEnabled(false);
         if (ui->autoCheck->isChecked())
@@ -219,7 +243,7 @@ void SendPanel::updateMeta()
     else
         text += QStringLiteral(" · 目标 %1 个在线设备").arg(m_targetCount);
 
-    ui->meta->setStyleSheet(QString());
+    setMetaError(false);
     ui->meta->setText(text);
 
     ui->sendButton->setEnabled(m_targetCount > 0);

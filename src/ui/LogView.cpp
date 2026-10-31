@@ -49,6 +49,14 @@ LogView::LogView(QWidget* parent)
                    .arg(kMaxRenderedEntries));
 }
 
+void LogView::setTheme(Theme theme)
+{
+    if (m_theme == theme)
+        return;
+    m_theme = theme;
+    renderAll();
+}
+
 void LogView::setEntries(const QVector<LogEntry>& entries)
 {
     m_entries = entries;
@@ -235,6 +243,8 @@ void LogView::appendRendered(const LogEntry& entry, bool followTail)
 
 void LogView::appendRenderedTo(QTextCursor& cursor, const LogEntry& entry)
 {
+    const ThemePalette& palette = themePalette(m_theme);
+
     QTextBlockFormat blockFormat;
     blockFormat.setBottomMargin(2.0);
     blockFormat.setLineHeight(112.0, QTextBlockFormat::ProportionalHeight);
@@ -243,7 +253,7 @@ void LogView::appendRenderedTo(QTextCursor& cursor, const LogEntry& entry)
     else
         cursor.insertBlock(blockFormat);
 
-    const QTextCharFormat timestampFormat = coloredText(QColor(QStringLiteral("#5a7186")));
+    const QTextCharFormat timestampFormat = coloredText(palette.logTimestamp);
     if (m_showTimestamp) {
         cursor.insertText(QStringLiteral("[%1] ")
                               .arg(entry.timestamp.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss.zzz"))),
@@ -256,23 +266,23 @@ void LogView::appendRenderedTo(QTextCursor& cursor, const LogEntry& entry)
     switch (entry.direction) {
     case Direction::Rx:
         tag = QStringLiteral("RX");
-        tagColor = QColor(QStringLiteral("#4ade80"));
-        tagBackground = QColor(QStringLiteral("#10352a"));
+        tagColor = palette.logRxTag;
+        tagBackground = palette.logRxTagBg;
         break;
     case Direction::Tx:
         tag = QStringLiteral("TX");
-        tagColor = QColor(QStringLiteral("#38bdf8"));
-        tagBackground = QColor(QStringLiteral("#0c2d40"));
+        tagColor = palette.logTxTag;
+        tagBackground = palette.logTxTagBg;
         break;
     case Direction::System:
         tag = QStringLiteral("SYS");
-        tagColor = QColor(QStringLiteral("#94a3b8"));
-        tagBackground = QColor(QStringLiteral("#1a2632"));
+        tagColor = palette.logSysTag;
+        tagBackground = palette.logSysTagBg;
         break;
     case Direction::Error:
         tag = QStringLiteral("ERR");
-        tagColor = QColor(QStringLiteral("#f87171"));
-        tagBackground = QColor(QStringLiteral("#3a171b"));
+        tagColor = palette.logErrTag;
+        tagBackground = palette.logErrTagBg;
         break;
     }
 
@@ -281,23 +291,23 @@ void LogView::appendRenderedTo(QTextCursor& cursor, const LogEntry& entry)
     badgeFormat.setBackground(tagBackground);
     badgeFormat.setFontWeight(QFont::Bold);
     cursor.insertText(QStringLiteral(" %1 ").arg(tag), badgeFormat);
-    cursor.insertText(QStringLiteral(" "), coloredText(QColor(QStringLiteral("#5a7186"))));
+    cursor.insertText(QStringLiteral(" "), coloredText(palette.logTimestamp));
 
     if (!entry.peer.isEmpty()) {
         cursor.insertText(QStringLiteral("[%1] ").arg(entry.peer),
-                          coloredText(QColor(QStringLiteral("#c4b5fd"))));
+                          coloredText(palette.logPeer));
     }
 
     if (entry.direction == Direction::System) {
         cursor.insertText(entry.message,
-                          coloredText(QColor(QStringLiteral("#8fa2b3")), true));
+                          coloredText(palette.logSysText, true));
     } else if (entry.direction == Direction::Error) {
         cursor.insertText(entry.message,
-                          coloredText(QColor(QStringLiteral("#fca5a5")), true));
+                          coloredText(palette.logErrText, true));
     } else {
         const QColor payloadColor = entry.direction == Direction::Rx
-            ? QColor(QStringLiteral("#c3f7d5"))
-            : QColor(QStringLiteral("#c7e9ff"));
+            ? palette.logRxText
+            : palette.logTxText;
         cursor.insertText(Bytes::toDisplay(entry.payload, m_format),
                           coloredText(payloadColor));
     }

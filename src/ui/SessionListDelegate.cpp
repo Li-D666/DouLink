@@ -21,20 +21,20 @@ QRectF checkboxRect(const QRect& card)
     return QRectF(card.left() + 12, card.top() + 10, 16, 16);
 }
 
-QColor stateColor(SessionState state)
+QColor stateColor(SessionState state, const ThemePalette& palette)
 {
     switch (state) {
     case SessionState::Connected:
     case SessionState::Listening:
-        return QColor(QStringLiteral("#4ade80"));
+        return palette.stateOnline;
     case SessionState::Connecting:
-        return QColor(QStringLiteral("#fbbf24"));
+        return palette.stateConnecting;
     case SessionState::Error:
-        return QColor(QStringLiteral("#f87171"));
+        return palette.stateError;
     case SessionState::Disconnected:
-        return QColor(QStringLiteral("#68798a"));
+        return palette.stateOffline;
     }
-    return QColor(QStringLiteral("#68798a"));
+    return palette.stateOffline;
 }
 
 } // namespace
@@ -42,6 +42,11 @@ QColor stateColor(SessionState state)
 SessionListDelegate::SessionListDelegate(QObject* parent)
     : QStyledItemDelegate(parent)
 {
+}
+
+void SessionListDelegate::setTheme(Theme theme)
+{
+    m_theme = theme;
 }
 
 QSize SessionListDelegate::sizeHint(const QStyleOptionViewItem& option,
@@ -59,16 +64,15 @@ void SessionListDelegate::paint(QPainter* painter,
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
 
+    const ThemePalette& palette = themePalette(m_theme);
     const QRect card = option.rect.adjusted(3, 2, -3, -2);
     const bool selected = option.state & QStyle::State_Selected;
     const bool hovered = option.state & QStyle::State_MouseOver;
 
     const QColor background = selected
-        ? QColor(QStringLiteral("#162431"))
-        : (hovered ? QColor(QStringLiteral("#111c26")) : QColor(QStringLiteral("#0e1720")));
-    const QColor border = selected
-        ? QColor(QStringLiteral("#2b5a70"))
-        : QColor(QStringLiteral("#172531"));
+        ? palette.cardSelectedBg
+        : (hovered ? palette.cardHoverBg : palette.cardBg);
+    const QColor border = selected ? palette.cardSelectedBorder : palette.cardBorder;
 
     painter->setPen(QPen(border, 1.0));
     painter->setBrush(background);
@@ -76,21 +80,20 @@ void SessionListDelegate::paint(QPainter* painter,
 
     if (selected) {
         painter->setPen(Qt::NoPen);
-        painter->setBrush(QColor(QStringLiteral("#22d3ee")));
+        painter->setBrush(palette.accent);
         painter->drawRoundedRect(
             QRectF(card.left() + 1, card.top() + 11, 3, card.height() - 22), 1.5, 1.5);
     }
 
     const bool checked = index.data(Qt::CheckStateRole).toInt() == Qt::Checked;
     const QRectF checkBox = checkboxRect(card);
-    painter->setPen(QPen(checked ? QColor(QStringLiteral("#22d3ee"))
-                                 : QColor(QStringLiteral("#3b5570")),
+    painter->setPen(QPen(checked ? palette.checkboxCheckedBorder
+                                 : palette.checkboxBorder,
                          1.2));
-    painter->setBrush(checked ? QColor(QStringLiteral("#123243"))
-                              : QColor(QStringLiteral("#0b131c")));
+    painter->setBrush(checked ? palette.checkboxCheckedBg : palette.checkboxBg);
     painter->drawRoundedRect(checkBox, 4, 4);
     if (checked) {
-        QPen checkPen(QColor(QStringLiteral("#67e8f9")), 2.0);
+        QPen checkPen(palette.checkMark, 2.0);
         checkPen.setCapStyle(Qt::RoundCap);
         checkPen.setJoinStyle(Qt::RoundJoin);
         painter->setPen(checkPen);
@@ -101,7 +104,7 @@ void SessionListDelegate::paint(QPainter* painter,
     }
 
     const auto state = static_cast<SessionState>(index.data(StateRole).toInt());
-    const QColor dotColor = stateColor(state);
+    const QColor dotColor = stateColor(state, palette);
     const QPointF dotCenter(card.left() + 38, card.top() + 18);
 
     QColor glow = dotColor;
@@ -116,7 +119,7 @@ void SessionListDelegate::paint(QPainter* painter,
     nameFont.setPointSizeF(10.0);
     nameFont.setWeight(QFont::DemiBold);
     painter->setFont(nameFont);
-    painter->setPen(QColor(QStringLiteral("#e8f1f8")));
+    painter->setPen(palette.sessionName);
 
     const QString name = index.data(NameRole).toString();
     const QFontMetrics nameMetrics(nameFont);
@@ -134,7 +137,7 @@ void SessionListDelegate::paint(QPainter* painter,
     painter->drawText(stateRect, Qt::AlignRight | Qt::AlignVCenter, stateText);
 
     const QFontMetrics smallMetrics(smallFont);
-    painter->setPen(QColor(QStringLiteral("#7c93a7")));
+    painter->setPen(palette.sessionEndpoint);
     const QString endpoint = index.data(EndpointRole).toString();
     const QRect endpointRect(card.left() + 50, card.top() + 28, card.width() - 62, 18);
     painter->drawText(endpointRect,
@@ -148,11 +151,11 @@ void SessionListDelegate::paint(QPainter* painter,
     const QString rxText = QStringLiteral("RX  %1").arg(Bytes::formatSize(rxBytes));
     const QString txText = QStringLiteral("TX  %1").arg(Bytes::formatSize(txBytes));
 
-    painter->setPen(QColor(QStringLiteral("#4ade80")));
+    painter->setPen(palette.metricRx);
     painter->drawText(metricRect, Qt::AlignLeft | Qt::AlignVCenter, rxText);
 
     const int rxWidth = smallMetrics.horizontalAdvance(rxText) + 14;
-    painter->setPen(QColor(QStringLiteral("#38bdf8")));
+    painter->setPen(palette.metricTx);
     painter->drawText(metricRect.adjusted(rxWidth, 0, 0, 0),
                       Qt::AlignLeft | Qt::AlignVCenter,
                       txText);

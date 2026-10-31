@@ -186,3 +186,7 @@ Session::send(payload, suffix)
 - 新分帧：扩展 `FrameMode` 与 `FrameCodec`。
 - 新协议：建议引入 `IProtocolCodec`，插在 `Session` 的帧回调与日志之间，保持传输/会话层不变。
 - 日志持久化：当前导出为 UTF-8 文本；可换为 CSV/JSON，或在 `Session::appendLog` 旁增加落盘 sink。
+
+## 10. 主题与自绘控件
+
+`ui::Theme` 统一维护暗色/亮色调色板和 QSS 资源（`:/theme_dark.qss`、`:/theme_light.qss`）。`MainWindow` 切换主题时同时更新应用 palette/QSS、`SessionListDelegate` 的卡片颜色、`LogView` 的富文本颜色，并持久化到 `QSettings`。QSS 负责普通控件，自绘控件从 `ThemePalette` 取色，避免暗色颜色在亮色主题里残留。

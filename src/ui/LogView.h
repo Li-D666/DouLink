@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Types.h"
+#include "ui/Theme.h"
 
 #include <QPlainTextEdit>
 #include <QVector>
@@ -37,6 +38,9 @@ public:
     void setShowTimestamp(bool show);
     bool showTimestamp() const { return m_showTimestamp; }
 
+    void setTheme(Theme theme);
+    Theme theme() const { return m_theme; }
+
     void setPaused(bool paused);
     bool isPaused() const { return m_paused; }
 
@@ -70,6 +74,7 @@ private:
 
     QVector<LogEntry> m_entries;
     DataFormat m_format = DataFormat::Text;
+    Theme m_theme = Theme::Dark;
     bool m_showTimestamp = true;
     bool m_paused = false;
     QString m_filter;

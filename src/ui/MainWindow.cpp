@@ -7,9 +7,11 @@
 #include "ui/SendPanel.h"
 #include "ui/SessionDialog.h"
 #include "ui/SessionListDelegate.h"
+#include "ui/Theme.h"
 #include "ui_mainwindow.h"
 
 #include <QAction>
+#include <QApplication>
 #include <QChar>
 #include <QCheckBox>
 #include <QComboBox>
@@ -50,7 +52,8 @@ MainWindow::MainWindow(doulink::SessionManager* manager, QWidget* parent)
 {
     ui->setupUi(this);
 
-    ui->sessionList->setItemDelegate(new doulink::ui::SessionListDelegate(this));
+    m_sessionDelegate = new doulink::ui::SessionListDelegate(this);
+    ui->sessionList->setItemDelegate(m_sessionDelegate);
     ui->mainSplitter->setStretchFactor(0, 0);
     ui->mainSplitter->setStretchFactor(1, 1);
     ui->mainSplitter->setSizes({310, 1010});
@@ -67,6 +70,7 @@ MainWindow::MainWindow(doulink::SessionManager* manager, QWidget* parent)
     connect(ui->openAllButton, &QPushButton::clicked, this, &MainWindow::onOpenAll);
     connect(ui->closeAllButton, &QPushButton::clicked, this, &MainWindow::onCloseAll);
     connect(ui->aboutButton, &QPushButton::clicked, this, &MainWindow::onAbout);
+    connect(ui->themeButton, &QPushButton::clicked, this, &MainWindow::onThemeToggled);
     connect(ui->toggleButton, &QPushButton::clicked, this, &MainWindow::onToggleSession);
     connect(ui->clearButton, &QPushButton::clicked, this, &MainWindow::onClearLog);
     connect(ui->saveButton, &QPushButton::clicked, this, &MainWindow::onSaveLog);
@@ -121,6 +125,8 @@ MainWindow::MainWindow(doulink::SessionManager* manager, QWidget* parent)
     auto* newShortcut = new QShortcut(QKeySequence::New, this);
     newShortcut->setContext(Qt::WindowShortcut);
     connect(newShortcut, &QShortcut::activated, this, &MainWindow::onNewConnection);
+
+    applyTheme(doulink::ui::savedTheme());
 
     if (m_manager) {
         connect(m_manager,
@@ -465,6 +471,42 @@ void MainWindow::refreshCounters()
     }
 
     ui->statusInfo->setText(QStringLiteral("%1 个会话 · %2 个在线").arg(total).arg(online));
+}
+
+void MainWindow::onThemeToggled()
+{
+    applyTheme(m_theme == doulink::ui::Theme::Light
+                   ? doulink::ui::Theme::Dark
+                   : doulink::ui::Theme::Light);
+}
+
+void MainWindow::applyTheme(doulink::ui::Theme theme)
+{
+    m_theme = theme;
+    doulink::ui::applyTheme(*qApp, theme);
+
+    if (m_sessionDelegate)
+        m_sessionDelegate->setTheme(theme);
+    if (ui->sessionList)
+        ui->sessionList->viewport()->update();
+    if (ui->logView)
+        ui->logView->setTheme(theme);
+    if (ui->sendPanel)
+        ui->sendPanel->refreshTheme();
+
+    updateThemeButton();
+    doulink::ui::saveTheme(theme);
+}
+
+void MainWindow::updateThemeButton()
+{
+    if (!ui->themeButton)
+        return;
+
+    const bool light = m_theme == doulink::ui::Theme::Light;
+    ui->themeButton->setText(light ? QStringLiteral("暗色") : QStringLiteral("亮色"));
+    ui->themeButton->setToolTip(light ? QStringLiteral("切换到暗色主题")
+                                      : QStringLiteral("切换到亮色主题"));
 }
 
 void MainWindow::onNewConnection()

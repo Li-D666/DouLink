@@ -74,6 +74,8 @@ add_executable(DouLink WIN32
     src/ui/SessionDialog.h
     src/ui/SessionListDelegate.cpp
     src/ui/SessionListDelegate.h
+    src/ui/Theme.cpp
+    src/ui/Theme.h
     src/ui/MainWindow.cpp
     src/ui/MainWindow.h
     src/ui/mainwindow.ui

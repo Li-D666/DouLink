@@ -13,6 +13,7 @@ DouLink 是一个基于 **C++11 + Qt 5 Widgets** 的串口 / 网口调试工具�
   - UDP：本机端口、目标地址/端口；接收任意来源并标注发送方；支持发送到 `255.255.255.255` 广播地址。
 - **多设备并发**：每个连接是独立的 `Session`，拥有独立的传输、分帧状态、统计和日志；可同时打开任意多个串口/TCP/UDP 会话。
 - **会话筛选与多选发送**：会话列表可按串口 / TCP / UDP 类型过滤；每个会话前有勾选框，发送时面向全部勾选设备。
+- **明暗主题**：内置深色 / 亮色两套主题，右上角“亮色/暗色”按钮即时切换并记住选择。
 - **报文日志**
   - 完整时间戳（`yyyy-MM-dd HH:mm:ss.zzz`）。
   - 接收绿色 `RX`、发送蓝色 `TX`、系统灰色 `SYS`、错误红色 `ERR`。
@@ -132,6 +133,7 @@ QT_QPA_PLATFORM_PLUGIN_PATH=D:/install/Qt/5.14.2/msvc2017_64/plugins/platforms
 4. 连接建立后，日志区显示带时间戳和方向颜色的报文；可在工具栏切换 HEX、搜索、筛选或保存。
 5. 在左侧勾选一个或多个设备，底部输入内容、选择文本/HEX 和结尾符后点击“发送到勾选”；勾选“定时发送”会按周期向当前勾选的在线设备发送。
 6. 会话列表上方可按类型过滤；右键会话可重命名、复制或删除。
+7. 右上角“亮色/暗色”按钮可切换主题，选择会写入用户设置并在下次启动时恢复。
 
 ### 本机快速自测（无需硬件）
 
@@ -152,7 +154,8 @@ DouLink/
 ├─ resources/
 │  ├─ app.png
 │  ├─ resources.qrc
-│  └─ theme.qss
+│  ├─ theme_dark.qss
+│  └─ theme_light.qss
 ├─ src/
 │  ├─ main.cpp
 │  ├─ core/        Types、ByteCodec、FrameCodec、ITransport
@@ -160,7 +163,7 @@ DouLink/
 │  ├─ infra/       SerialTransport、TcpClientTransport、
 │  │               TcpServerTransport、UdpTransport、TransportFactory
 │  └─ ui/          MainWindow、LogView、SendPanel、SessionDialog、
-│                  SessionListDelegate、BrandMark
+│                  SessionListDelegate、BrandMark、Theme
 │                  mainwindow.ui / sessiondialog.ui / sendpanel.ui
 ```
 
